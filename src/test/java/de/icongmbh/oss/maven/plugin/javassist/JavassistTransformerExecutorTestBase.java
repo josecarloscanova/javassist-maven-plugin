@@ -104,21 +104,24 @@ public abstract class JavassistTransformerExecutorTestBase {
   }
 
   @SuppressWarnings("resource")
-  protected String withInnerClass() throws IOException {
+  protected String[] withInnerClass() throws IOException {
     final String packageName = "test";
     final String className = "WithInnerTest";
+    final String innerClassName = "InnerClass";
     final StringBuilder source = new StringBuilder().append("package ").append(packageName)
       .append(";").append("public class ").append(className).append(" { ").append("  static { ")
       .append("    System.out.println(\"hello\"); ").append("  }").append("  public ")
       .append(className).append("() { ").append("    System.out.println(\"world\"); ")
-      .append("  } ").append("  class InnerClass {").append("  }").append("}");
+      .append("  } ").append("  class ").append(innerClassName).append(" {").append("  }")
+      .append("}");
 
     compileSourceFiles(writeSourceFile(className, source.toString()));
     // source file, compiled class and compiled inner class
     assertThat("3 classes in classes directory",
                FileUtils.listFiles(classDirectory(), null, true).size(),
                is(3));
-    return packageName + '.' + className;
+    return new String[] {packageName + '.' + className,
+                         packageName + '.' + className + '$' + innerClassName};
   }
 
   private void compileSourceFiles(File ... sourceFiles) {
